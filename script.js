@@ -1,37 +1,3 @@
-// const container = document.getElementById('container');
-// const div = document.createElement('div');
-
-// const efir2 = document.createElement('efir2');
-
-// container.appendChild(efir2);
-
-// efir2.innerHTML = "hello kak dela?"
-
-// div.className = 'child'
-// div.innerText = "container 3"
-// div.style.background = "blue"
-
-// div.onclick = changeColor
-// div.onmouseenter = changeColor
-// div.onmouseleave = changeColorBack
-
-// function changeColorBack() {
-//     div.style.background = "blue";
-//     div.innerHTML = "hoho"
-// }
-
-// function changeColor() {
-
-//     console.log(' i was click ');
-//     div.style.background = "green";
-//     div.innerHTML = "haha"
-
-// }
-
-// container.appendChild(div);
-// console.log(container)
-// console.log(div)
-
 const data = {
     "count": 82,
     "next": "https://swapi.dev/api/people/?page=2",
@@ -294,17 +260,13 @@ const data = {
     ]
 };
 
-console.log(data.results);
-
 const DB = data.results
-
 
 class TableGenerator {
     constructor(data, id) {
         this.data = data;
         this.id = id;
     }
-
 
     setData(data, id) {
         this.id = id;
@@ -313,48 +275,95 @@ class TableGenerator {
 
     display() {
         const myTable = document.getElementById(this.id);
-        let column = document.createElement('tr');       
+
+        let column = document.createElement('tr');     
+        column.className = "table-headers";  
+
+        let columnHolder = document.createElement('div');
+        columnHolder.className = "table-columns";
+
         let dataProps = Object.keys(this.data[0]);
 
         myTable.appendChild(column);
-    
+        myTable.appendChild(columnHolder);
+
         for (let v = 0; v < dataProps.length; v++) {
             let th = document.createElement('th');
+            th.className = "column-header";
+            th.style.marginRight = "20px";
             th.innerText = dataProps[v]
             column.appendChild(th);
-            column.className = "table-headers";
 
             let strings = document.createElement('tr');
             strings.className = "column";
-             myTable.appendChild(strings);
+            columnHolder.appendChild(strings);
+            strings.style.marginRight = th.style.marginRight;
+
+            let maxWidth = th.offsetWidth;
+            let wider = false;
 
             for( let z = 0; z < this.data.length; z++ ) {
                 let td = document.createElement('td');
-                
-                // removeChild()
-                // innerHtml
-                // onblur
-                // event for input onchange 
-
-                td.onclick = function() {
-                  console.log(td.innerHTML)
+                td.className = "column-element";
+                if (Array.isArray(this.data[z][dataProps[v]])){
+                    for (let i = 0; i < this.data[z][dataProps[v]].length; i++){
+                        td.innerText.concat(" ", this.data[z][dataProps[v]]);
+                    }
                 }
 
 
-                td.innerText = this.data[v][dataProps[z]]
-                strings.appendChild(td);
+             td.onclick = function() {
+                let activeInput = document.getElementById("activeInput");
+                    
+                if (activeInput)
+                {
+                    activeInput.focus();
+                    activeInput.value = td.innerText;
+                    let parent = activeInput.parentElement;
+                    activeInput.onblur = function(){
+                        parent.innerText = td.innerText;
+                       activeInput.remove();
+                    }
+                return;
+                 }
+                 else
+                 {                    
+                     let input = document.createElement('input');
+                     let inputSave = document.createElement('div');
+                     inputSave.innerText = td.innerText;
+                     inputSave.style.opacity = 0;
+                     input.id = "activeInput";
+                     input.type = "text";
+                     input.style.width = "100%"; 
+                 
+                     input.onclick = function() {
+                        input.value = td.innerText;
+                     }
+                     td.innerText = null;
+                     td.appendChild(input);
+                     input.appendChild(inputSave);
+                 }                
+             }
+
+            td.innerText = this.data[z][dataProps[v]];
+            strings.appendChild(td);
+
+            if (td.offsetWidth > maxWidth){                
+                maxWidth = td.offsetWidth;
+                th.style.width = maxWidth;
+                wider = true;
+            }
+
+            if (wider == false){
+                td.style.width = maxWidth + 10;
+            }
             }
         }
     }
-
 }
 
-
 const MyTable = new TableGenerator()
-
 
 MyTable.setData(DB, "table-generator");
 
 MyTable.display();
-
-

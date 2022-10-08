@@ -1,0 +1,32 @@
+body{
+    padding: 0%;
+    margin: 0%;
+}
+
+th{
+    padding: 0;
+}
+
+td{
+    padding: 0%;
+}
+
+.table-columns{
+    display: flex;
+}
+
+.table-headers{
+    display: flex;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.column{
+    display: flex;
+    flex-direction: column;
+}
+
+.column-element{
+    white-space: nowrap;
+    height: 30px;
+}
