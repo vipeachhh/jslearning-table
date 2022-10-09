@@ -1,32 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu&display=swap');
+
 body{
     padding: 0%;
     margin: 0%;
 }
 
-th{
-    padding: 0;
-}
-
-td{
-    padding: 0%;
+div {
+    font-family: "Ubuntu", sans-serif;
 }
 
 .table-columns{
     display: flex;
 }
 
-.table-headers{
-    display: flex;
-    text-align: left;
-    margin-bottom: 10px;
+.table-column {
+    width: 100%;
+    border: 2px solid #a1bfff;
+    margin: -2px 0 0 -2px;
 }
 
-.column{
-    display: flex;
-    flex-direction: column;
+.column-header{
+    padding-right: 10px;
+    padding-left: 10px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
 }
 
-.column-element{
+.column-header::first-letter{
+    text-transform: uppercase;
+}
+
+.column-cell{
+    height: 25px;
+    line-height: 25px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-right: 10px;
+    padding-left: 10px;
+    border: 2px solid #a1bfff;
+    margin: -1px 0 0 -1px;
+    text-align: center;
     white-space: nowrap;
-    height: 30px;
+}
+
+.column-cell-input-active{
+    font-size: 0px;
+    height: 25px;
+    line-height: 25px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-right: 10px;
+    padding-left: 10px;
+    border: 2px solid #a1bfff;
+    margin: -1px 0 0 -1px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.table-input-field{   
+    width: 100%;
 }
