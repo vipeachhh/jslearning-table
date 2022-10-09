@@ -266,99 +266,126 @@ class TableGenerator {
     constructor(data, id) {
         this.data = data;
         this.id = id;
+        this.selected = false;
+        this.input = null;
+        this.selectedTableCell = null;
     }
 
     setData(data, id) {
         this.id = id;
-        this.data = data; 
+        this.data = data;
     }
 
     display() {
         const myTable = document.getElementById(this.id);
+        let columns = document.createElement('div');
+        columns.className = "table-columns";
 
-        let column = document.createElement('tr');     
-        column.className = "table-headers";  
-
-        let columnHolder = document.createElement('div');
-        columnHolder.className = "table-columns";
+        myTable.appendChild(columns);
 
         let dataProps = Object.keys(this.data[0]);
-
-        myTable.appendChild(column);
-        myTable.appendChild(columnHolder);
-
         for (let v = 0; v < dataProps.length; v++) {
-            let th = document.createElement('th');
-            th.className = "column-header";
-            th.style.marginRight = "20px";
-            th.innerText = dataProps[v]
-            column.appendChild(th);
 
-            let strings = document.createElement('tr');
-            strings.className = "column";
-            columnHolder.appendChild(strings);
-            strings.style.marginRight = th.style.marginRight;
+            let column = this.createColumn(columns);
 
-            let maxWidth = th.offsetWidth;
-            let wider = false;
+            this.createHader(dataProps, v, column);
 
-            for( let z = 0; z < this.data.length; z++ ) {
-                let td = document.createElement('td');
-                td.className = "column-element";
-                if (Array.isArray(this.data[z][dataProps[v]])){
-                    for (let i = 0; i < this.data[z][dataProps[v]].length; i++){
-                        td.innerText.concat(" ", this.data[z][dataProps[v]]);
+            for (let z = 0; z < this.data.length; z++) {
+
+                let tableCell = document.createElement('div');
+                tableCell.className = "column-cell"
+                let tableCellValue = document.createElement('div');
+
+                this.fillData(z, dataProps, v, tableCell);
+
+                let tableCellObject = new TableCell(tableCell, tableCell.innerText, this, tableCellValue);
+                tableCell.onclick = function () {
+                    if (tableCellObject.table.selected == false) {
+                        tableCellObject.selectTableCell();
+                        return;
+                    }
+
+                    if (tableCellObject.table.selected == true) {
+                        tableCellObject.table.selectedTableCell.closeInput();
+                        tableCellObject.table.selectedTableCell.changeData(tableCellObject.data);
+                        tableCellObject.deselectTableCell();
+                        return;
                     }
                 }
-
-
-             td.onclick = function() {
-                let activeInput = document.getElementById("activeInput");
-                    
-                if (activeInput)
-                {
-                    activeInput.focus();
-                    activeInput.value = td.innerText;
-                    let parent = activeInput.parentElement;
-                    activeInput.onblur = function(){
-                        parent.innerText = td.innerText;
-                       activeInput.remove();
-                    }
-                return;
-                 }
-                 else
-                 {                    
-                     let input = document.createElement('input');
-                     let inputSave = document.createElement('div');
-                     inputSave.innerText = td.innerText;
-                     inputSave.style.opacity = 0;
-                     input.id = "activeInput";
-                     input.type = "text";
-                     input.style.width = "100%"; 
-                 
-                     input.onclick = function() {
-                        input.value = td.innerText;
-                     }
-                     td.innerText = null;
-                     td.appendChild(input);
-                     input.appendChild(inputSave);
-                 }                
-             }
-
-            td.innerText = this.data[z][dataProps[v]];
-            strings.appendChild(td);
-
-            if (td.offsetWidth > maxWidth){                
-                maxWidth = td.offsetWidth;
-                th.style.width = maxWidth;
-                wider = true;
-            }
-
-            if (wider == false){
-                td.style.width = maxWidth + 10;
-            }
+                column.appendChild(tableCell);
             }
         }
+    }
+
+    createColumn(columns) {
+        let column = document.createElement('div');
+        column.className = "table-column";
+        columns.appendChild(column);
+        return column;
+    }
+
+    createHader(dataProps, v, column) {
+        let header = document.createElement('div');
+        header.className = "column-header";
+        header.innerText = dataProps[v];
+        column.appendChild(header);
+    }
+
+    fillData(z, dataProps, v, tableCell) {
+        if (Array.isArray(this.data[z][dataProps[v]])) {
+            for (let i = 0; i < this.data[z][dataProps[v]].length; i++) {
+                tableCell.innerText.concat(" ", this.data[z][dataProps[v]]);
+            }
+        }
+
+        if (this.data[z][dataProps[v]].length == 0) {
+            tableCell.innerText = "unknown";
+        }
+
+        else {
+            tableCell.innerText = this.data[z][dataProps[v]];
+        }
+    }
+}
+
+class TableCell {
+    constructor(tableCell, data, table) {
+        this.tableCell = tableCell;
+        this.data = data;
+        this.table = table;
+        this.tableCell.innerText = data;
+        this.tableCell.addEventListener(this.changeValue, this, false);
+    }
+
+    changeData(value) {
+        this.data = value;
+        this.tableCell.innerText = this.data;
+    }
+
+    selectTableCell() {
+        this.table.selected = true;
+        this.table.selectedTableCell = this;
+        this.openInput();
+    }
+
+    deselectTableCell() {
+        this.table.selected = false;
+        this.table.selectedTableCell = null;
+    }
+
+    closeInput() {
+        this.tableCell.className = "column-cell";
+        this.table.input.remove();
+    }
+
+    openInput() {
+        this.tableCell.className = "column-cell-input-active";
+        let input = document.createElement('input');
+        this.table.input = input;
+        this.table.input.className = "table-input-field";
+        this.table.input.focus();
+        this.table.input.value = this.data;
+        this.tableCell.appendChild(input);
     }
 }
 
